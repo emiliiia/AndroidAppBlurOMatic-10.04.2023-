@@ -52,11 +52,17 @@ class WorkManagerBluromaticRepository(context: Context) : BluromaticRepository {
                 OneTimeWorkRequest.from(CleanupWorker::class.java)
             )
 
+        val constraints = Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .build()
+
         //WorkRequest, щоб розмити зображення
         val blurBuilder = OneTimeWorkRequestBuilder<BlurWorker>()
 
         //новий код для об’єкта вхідних даних
         blurBuilder.setInputData(createInputDataForWorkRequest(blurLevel, imageUri))
+
+        blurBuilder.setConstraints(constraints) // Add this code
 
         // Додайте робочий запит розмиття до ланцюжка
         continuation = continuation.then(blurBuilder.build())
